@@ -1,8 +1,62 @@
-import {View, Text, StatusBar, Image, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StatusBar,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import {Input} from 'react-native-elements';
-import React from 'react';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import React, {useState} from 'react';
 
 const Register = ({navigation}) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const onRegister = async () => {
+    if (!email && !password) {
+      Alert.alert(
+        'Warning',
+        'Please enter all fields',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ],
+        {cancelable: true},
+      );
+    }
+    try {
+      const result = await auth().createUserWithEmailAndPassword(
+        email,
+        password,
+      );
+      console.log(result);
+      firestore()
+        .collection('users')
+        .doc(result.user.uid)
+        .set({email, uid: result.user.uid});
+    } catch (error) {
+      console.log(error);
+      // Alert.alert(
+      //   'Something went wrong',
+      //   'Try again later',
+      //   [
+      //     {
+      //       text: 'Cancel',
+      //       onPress: () => console.log('Cancel Pressed'),
+      //       style: 'cancel',
+      //     },
+      //     {text: 'OK', onPress: () => console.log('OK Pressed')},
+      //   ],
+      //   {cancelable: false},
+      // );
+    }
+  };
   return (
     <>
       <StatusBar animated={true} backgroundColor="white" />
@@ -32,11 +86,13 @@ const Register = ({navigation}) => {
               placeholder="Enter your email"
               containerStyle={{width: 350, alignSelf: 'center'}}
               leftIcon={{type: 'material', name: 'email'}}
+              onChangeText={text => setEmail(text)}
             />
             <Input
               placeholder="Enter your password"
               containerStyle={{width: 350, alignSelf: 'center'}}
               leftIcon={{type: 'material', name: 'lock'}}
+              onChangeText={text => setPassword(text)}
             />
           </View>
         </View>
@@ -48,7 +104,7 @@ const Register = ({navigation}) => {
             marginTop: 20,
             borderRadius: 20,
           }}
-          onPress={() => navigation.navigate('Chat')}>
+          onPress={onRegister}>
           <Text
             style={{
               padding: 15,
