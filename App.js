@@ -7,10 +7,11 @@ import Register from './Authentication/Register';
 import Chat from './AfterLogin/Chat';
 import auth from '@react-native-firebase/auth';
 import Home from './AfterLogin/Home';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 const Stack = createStackNavigator();
 
 const App = () => {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState(null);
   useEffect(() => {
     const unregister = auth().onAuthStateChanged(exist => {
       if (exist) setUser(exist);
@@ -29,10 +30,25 @@ const App = () => {
           headerShown: false,
         }}>
         {user ? (
-          <Stack.Screen name="Home" component={Home} />
+          <>
+            <Stack.Screen name="Home">
+              {props => <Home {...props} user={user} />}
+            </Stack.Screen>
+            <Stack.Screen
+              name="Chat"
+              options={({route}) => ({title: route.params.email})}>
+              {props => <Chat {...props} user={user} />}
+            </Stack.Screen>
+          </>
         ) : (
           <>
-            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{
+                headerShown: false,
+              }}
+            />
             <Stack.Screen name="Register" component={Register} />
           </>
         )}

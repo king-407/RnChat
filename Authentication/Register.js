@@ -10,12 +10,14 @@ import {Input} from 'react-native-elements';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import React, {useState} from 'react';
-
+import Lottie from 'lottie-react-native';
 const Register = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const onRegister = async () => {
-    if (!email && !password) {
+    setLoading(true);
+    if (!email || !password) {
       Alert.alert(
         'Warning',
         'Please enter all fields',
@@ -56,7 +58,11 @@ const Register = ({navigation}) => {
       //   {cancelable: false},
       // );
     }
+    setLoading(false);
   };
+  if (loading) {
+    return <Lottie source={require('../animations/loader.json')} autoPlay />;
+  }
   return (
     <>
       <StatusBar animated={true} backgroundColor="white" />
