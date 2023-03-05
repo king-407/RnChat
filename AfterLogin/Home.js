@@ -51,7 +51,17 @@ const Home = ({navigation, user}) => {
           source={require('../animations/chatting.json')}
           autoPlay
         />
-        <View style={{marginTop: 40}}>
+        <Text
+          style={{
+            fontFamily: 'TiltWarp-Regular',
+            fontSize: 29,
+            marginTop: 50,
+            marginLeft: 20,
+            color: 'black',
+          }}>
+          Chat with your friends 📲
+        </Text>
+        <View style={{marginTop: 10}}>
           {users.map(student => {
             return (
               <TouchableOpacity
@@ -96,9 +106,11 @@ const Home = ({navigation, user}) => {
                       marginLeft: 50,
                       marginTop: 40,
                       fontSize: 23,
-                      fontWeight: '400',
-                      fontStyle: 'italic',
+                      fontWeight: '100',
+
                       color: 'black',
+
+                      fontFamily: 'TiltWarp-Regular',
                     }}>
                     {student.name}
                   </Text>
@@ -107,28 +119,27 @@ const Home = ({navigation, user}) => {
             );
           })}
         </View>
-
-        <AntDesign
-          name="logout"
-          color="white"
-          size={40}
+        <View
           style={{
             position: 'absolute',
             top: 20,
-            right: 35,
-            backgroundColor: 'black',
-            padding: 10,
-            borderRadius: 50,
-            shadowColor: 'black',
-            shadowOpacity: 0.26,
-            shadowOffset: {width: 0, height: 2},
-            shadowRadius: 10,
+            right: 13,
             elevation: 3,
-          }}
-          onPress={() => {
-            auth().signOut();
-          }}
-        />
+          }}>
+          <AntDesign
+            name="logout"
+            color="white"
+            size={37}
+            style={{
+              backgroundColor: 'black',
+              padding: 10,
+              borderRadius: 50,
+            }}
+            onPress={() => {
+              auth().signOut();
+            }}
+          />
+        </View>
         <AntDesign
           name="plus"
           color="white"
@@ -136,7 +147,7 @@ const Home = ({navigation, user}) => {
           style={{
             position: 'absolute',
             top: 20,
-            left: 35,
+            left: 13,
             backgroundColor: 'black',
             padding: 7,
             borderRadius: 50,

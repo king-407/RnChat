@@ -2,17 +2,21 @@ import {View, Text, TouchableOpacity} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {ScrollView} from 'react-native-gesture-handler';
+import Lottie from 'lottie-react-native';
 const ShowTweet = ({user}) => {
   const [tweets, setTweets] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const getTweets = async () => {
     try {
+      setLoading(true);
       const querySnap = await firestore().collection('Tweets').get();
       let cards = [];
       querySnap._docs.forEach(element => {
         cards.push(element._data);
       });
       setTweets(cards);
+      setLoading(false);
     } catch (e) {
       console.log(e);
     }
@@ -21,7 +25,9 @@ const ShowTweet = ({user}) => {
     getTweets();
     console.log(tweets);
   }, []);
-
+  if (loading) {
+    return <Lottie source={require('../animations/loader.json')} autoPlay />;
+  }
   return (
     <ScrollView>
       <View style={{marginTop: 40}}>
@@ -47,8 +53,8 @@ const ShowTweet = ({user}) => {
                     marginLeft: 20,
                     marginTop: 20,
                     fontSize: 20,
-                    fontWeight: '450',
-                    fontStyle: 'italic',
+
+                    fontFamily: 'TiltWarp-Regular',
                     color: 'black',
                   }}>
                   {student.tweet}
@@ -58,9 +64,10 @@ const ShowTweet = ({user}) => {
                     marginLeft: 270,
                     marginTop: 47,
                     fontSize: 17,
-                    fontStyle: 'italic',
+
                     fontWeight: '500',
                     color: 'black',
+                    fontFamily: 'TiltWarp-Regular',
                   }}>
                   - {student.name}
                 </Text>
