@@ -1,4 +1,4 @@
-import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
+import {View, Text, ScrollView, TouchableOpacity, Image} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import React, {useEffect, useState, useLayoutEffect} from 'react';
 import Lottie from 'lottie-react-native';
@@ -9,12 +9,14 @@ const Home = ({navigation, user}) => {
   const [loading, setLoading] = useState(false);
 
   const getUsers = async () => {
+    setLoading(true);
     const querySnap = await firestore()
       .collection('users')
       .where('uid', '!=', user.uid)
       .get();
     const allusers = querySnap._docs.map(docSnap => docSnap.data());
     setUsers(allusers);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -38,7 +40,9 @@ const Home = ({navigation, user}) => {
   //       ),
   //     });
   //   }, [navigation]);
-
+  if (loading) {
+    return <Lottie source={require('../animations/loader.json')} autoPlay />;
+  }
   return (
     <ScrollView>
       <View style={{flex: 1}}>
@@ -54,7 +58,7 @@ const Home = ({navigation, user}) => {
                 key={student.uid}
                 style={{
                   marginTop: 10,
-                  height: 150,
+                  height: 140,
                   width: 350,
                   backgroundColor: '#FFF2FD',
                   borderRadius: 35,
@@ -70,42 +74,76 @@ const Home = ({navigation, user}) => {
                     uid: student.uid,
                   });
                 }}>
-                <View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
+                  <Image
+                    style={{
+                      padding: 5,
+                      height: 100,
+                      width: 80,
+                      marginLeft: 30,
+                      marginTop: 15,
+                      borderRadius: 100,
+
+                      borderColor: 'black',
+                    }}
+                    source={require('../images/Hacker2.png')}
+                  />
                   <Text
                     style={{
-                      marginLeft: 20,
-                      marginTop: 20,
-                      fontSize: 20,
-                      fontWeight: '450',
+                      marginLeft: 50,
+                      marginTop: 40,
+                      fontSize: 23,
+                      fontWeight: '400',
                       fontStyle: 'italic',
                       color: 'black',
                     }}>
-                    {student.email}
-                  </Text>
-                  <Text
-                    style={{
-                      marginLeft: 12,
-                      marginTop: 12,
-                      fontSize: 17,
-                      fontStyle: 'italic',
-                      fontWeight: '500',
-                      color: 'black',
-                    }}>
-                    {student.uid}
+                    {student.name}
                   </Text>
                 </View>
               </TouchableOpacity>
             );
           })}
         </View>
-        <Text style={{color: 'black'}}> hi</Text>
+
         <AntDesign
           name="logout"
-          color="black"
-          size={30}
-          style={{position: 'absolute', top: 20, right: 35}}
+          color="white"
+          size={40}
+          style={{
+            position: 'absolute',
+            top: 20,
+            right: 35,
+            backgroundColor: 'black',
+            padding: 10,
+            borderRadius: 50,
+            shadowColor: 'black',
+            shadowOpacity: 0.26,
+            shadowOffset: {width: 0, height: 2},
+            shadowRadius: 10,
+            elevation: 3,
+          }}
           onPress={() => {
             auth().signOut();
+          }}
+        />
+        <AntDesign
+          name="plus"
+          color="white"
+          size={40}
+          style={{
+            position: 'absolute',
+            top: 20,
+            left: 35,
+            backgroundColor: 'black',
+            padding: 7,
+            borderRadius: 50,
+            elevation: 100,
+          }}
+          onPress={() => {
+            navigation.navigate('Tweet');
           }}
         />
       </View>

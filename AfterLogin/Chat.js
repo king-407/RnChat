@@ -1,24 +1,28 @@
 import React, {useState, useCallback, useEffect} from 'react';
 import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
-import {GiftedChat} from 'react-native-gifted-chat';
+import {GiftedChat, Bubble} from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 export default function Chat({user, route}) {
   const [messages, setMessages] = useState([]);
   const {uid} = route.params;
-
+  const getMsg = async () => {
+    const docId = user.uid > uid ? user.uid + '-' + uid : uid + '-' + user.uid;
+    const querySnap = await firestore()
+      .collection('chatroom')
+      .doc(docId)
+      .collection('message')
+      .orderBy('createdAt', 'desc')
+      .get();
+    const allmsg = querySnap.docs.map(docSnap => {
+      return {
+        ...docSnap.data(),
+        createdAt: docSnap.data().createdAt.toDate(),
+      };
+    });
+    setMessages(allmsg);
+  };
   useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: 'Hello developer',
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: 'React Native',
-          avatar: 'https://placeimg.com/140/140/any',
-        },
-      },
-    ]);
+    getMsg();
   }, []);
 
   const onSend = message => {
@@ -32,7 +36,6 @@ export default function Chat({user, route}) {
     setMessages(previousMessages => GiftedChat.append(previousMessages, myMsg));
     const docId = user.uid > uid ? user.uid + '-' + uid : uid + '-' + user.uid;
 
-    console.log(myMsg);
     firestore()
       .collection('chatroom')
       .doc(docId)
@@ -44,12 +47,11 @@ export default function Chat({user, route}) {
     <View style={{flex: 1}}>
       <GiftedChat
         messages={messages}
-        onSend={messages => onSend(messages)}
+        onSend={mess => onSend(mess)}
         user={{
           _id: user.uid,
         }}
       />
-      <Text>hi</Text>
     </View>
   );
 }

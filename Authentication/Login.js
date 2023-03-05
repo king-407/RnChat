@@ -8,23 +8,21 @@ import {
 } from 'react-native';
 import {Input} from 'react-native-elements';
 import React, {useState} from 'react';
-import {auth} from '@react-native-firebase/auth';
+import auth from '@react-native-firebase/auth';
 import Lottie from 'lottie-react-native';
 const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const onLogin = async () => {
+    setLoading(true);
     if (!email || !password) {
       alert('please add all the field');
       return;
     }
     try {
-      setLoading(true);
-      auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(response => response.json())
-        .catch(err => console.log(err));
+      const final = await auth().signInWithEmailAndPassword(email, password);
+
       setLoading(false);
     } catch (err) {
       console.log(err);

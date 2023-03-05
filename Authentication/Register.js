@@ -15,6 +15,7 @@ const Register = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
   const onRegister = async () => {
     setLoading(true);
     if (!email || !password) {
@@ -41,7 +42,7 @@ const Register = ({navigation}) => {
       firestore()
         .collection('users')
         .doc(result.user.uid)
-        .set({email, uid: result.user.uid});
+        .set({email, uid: result.user.uid, name});
     } catch (error) {
       console.log(error);
       // Alert.alert(
@@ -99,6 +100,12 @@ const Register = ({navigation}) => {
               containerStyle={{width: 350, alignSelf: 'center'}}
               leftIcon={{type: 'material', name: 'lock'}}
               onChangeText={text => setPassword(text)}
+            />
+            <Input
+              placeholder="Enter your password"
+              containerStyle={{width: 350, alignSelf: 'center'}}
+              leftIcon={{type: 'ant', name: 'group'}}
+              onChangeText={text => setName(text)}
             />
           </View>
         </View>
