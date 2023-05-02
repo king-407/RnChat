@@ -8,7 +8,7 @@ import Chat from './AfterLogin/Chat';
 import auth from '@react-native-firebase/auth';
 import Home from './AfterLogin/Home';
 import Tweet from './AfterLogin/Tweet';
-import ShowTweet from './AfterLogin/ShowTweet';
+
 import AntDesign from 'react-native-vector-icons/AntDesign';
 const Stack = createStackNavigator();
 
@@ -43,9 +43,6 @@ const App = () => {
             </Stack.Screen>
             <Stack.Screen name="Tweet">
               {props => <Tweet {...props} user={user} />}
-            </Stack.Screen>
-            <Stack.Screen name="ShowTweet">
-              {props => <ShowTweet {...props} user={user} />}
             </Stack.Screen>
           </>
         ) : (

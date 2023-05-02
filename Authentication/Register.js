@@ -11,11 +11,24 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import React, {useState} from 'react';
 import Lottie from 'lottie-react-native';
+import storage from '@react-native-firebase/storage';
+import {launchImageLibrary} from 'react-native-image-picker';
+
 const Register = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
+  const [display, setDisplay] = useState('');
+  const upload = () => {
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+      },
+      data => setDisplay(data.assets[0].uri),
+    );
+    console.log(display);
+  };
   const onRegister = async () => {
     setLoading(true);
     if (!email || !password) {
@@ -38,11 +51,22 @@ const Register = ({navigation}) => {
         email,
         password,
       );
-      console.log(result);
+      let downloadurl = null;
+      if (display) {
+        const splitPath = display.split('/');
+        const imageName = splitPath[splitPath.length - 1];
+        const reference = storage().ref(
+          `${result.user.uid}/images/${imageName}`,
+        );
+        const data = await reference.putFile(display);
+        downloadurl = await storage()
+          .ref(data.metadata.fullPath)
+          .getDownloadURL();
+      }
       firestore()
         .collection('users')
         .doc(result.user.uid)
-        .set({email, uid: result.user.uid, name});
+        .set({email, uid: result.user.uid, name, display: downloadurl});
     } catch (error) {
       console.log(error);
       // Alert.alert(
@@ -59,6 +83,7 @@ const Register = ({navigation}) => {
       //   {cancelable: false},
       // );
     }
+
     setLoading(false);
   };
   if (loading) {
@@ -109,6 +134,25 @@ const Register = ({navigation}) => {
             />
           </View>
         </View>
+        <TouchableOpacity
+          style={{
+            backgroundColor: '#ADD8E6',
+            width: 100,
+            marginLeft: 30,
+
+            borderRadius: 20,
+          }}
+          onPress={upload}>
+          <Text
+            style={{
+              padding: 15,
+              alignSelf: 'center',
+              color: 'white',
+              fontWeight: '800',
+            }}>
+            Image
+          </Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={{
             backgroundColor: '#ADD8E6',

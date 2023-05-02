@@ -1,26 +1,63 @@
-import {View, Text, ScrollView, TouchableOpacity, Image} from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  FlatList,
+} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+
 import React, {useEffect, useState, useLayoutEffect} from 'react';
 import Lottie from 'lottie-react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/AntDesign';
 import auth from '@react-native-firebase/auth';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+
+import AntDesign from 'react-native-vector-icons/AntDesign';
 const Home = ({navigation, user}) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [tweets, setTweets] = useState([]);
+  const [name, setName] = useState();
+  const [profile, setProfile] = useState();
+
+  const userInfo = async () => {
+    const person = await firestore().collection('users').doc(user.uid).get();
+    setName(person._data.name);
+    setProfile(person._data.display);
+  };
+  const getPosts = async () => {
+    setLoading(true);
+    const querySnap = await firestore().collection('Tweets').get();
+    let cards = [];
+    querySnap._docs.forEach(element => {
+      cards.push(element._data);
+    });
+    setTweets(cards);
+    setLoading(false);
+  };
+  useEffect(() => {
+    userInfo();
+  }, []);
 
   const getUsers = async () => {
-    setLoading(true);
     const querySnap = await firestore()
       .collection('users')
       .where('uid', '!=', user.uid)
       .get();
     const allusers = querySnap._docs.map(docSnap => docSnap.data());
     setUsers(allusers);
-    setLoading(false);
   };
 
   useEffect(() => {
     getUsers();
+  }, []);
+
+  useEffect(() => {
+    console.log('i am back');
+    getPosts();
   }, []);
 
   //   useLayoutEffect(() => {
@@ -44,119 +81,165 @@ const Home = ({navigation, user}) => {
     return <Lottie source={require('../animations/loader.json')} autoPlay />;
   }
   return (
-    <ScrollView>
-      <View style={{flex: 1}}>
-        <Lottie
-          style={{alignSelf: 'center', height: 250, width: 10, marginTop: 40}}
-          source={require('../animations/chatting.json')}
-          autoPlay
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={{backgroundColor: 'black'}}>
+      <TouchableOpacity
+        onPress={() => {
+          auth().signOut();
+        }}>
+        <Image
+          style={{
+            height: 40,
+            width: 40,
+            borderRadius: 50,
+            position: 'absolute',
+            right: 10,
+            top: 40,
+          }}
+          source={{
+            uri: profile,
+          }}
         />
+      </TouchableOpacity>
+      <View>
         <Text
           style={{
-            fontFamily: 'TiltWarp-Regular',
-            fontSize: 29,
-            marginTop: 50,
-            marginLeft: 20,
-            color: 'black',
+            fontFamily: 'DancingScript-VariableFont_wght',
+            fontSize: 45,
+            marginTop: 20,
+            marginLeft: 10,
+            color: 'white',
+            alignSelf: 'center',
           }}>
-          Chat with your friends 📲
+          DiaryBook
         </Text>
-        <View style={{marginTop: 10}}>
-          {users.map(student => {
+
+        <FlatList
+          data={users}
+          horizontal={true}
+          renderItem={({item}) => {
             return (
               <TouchableOpacity
-                key={student.uid}
-                style={{
-                  marginTop: 10,
-                  height: 140,
-                  width: 350,
-                  backgroundColor: '#FFF2FD',
-                  borderRadius: 35,
-
-                  elevation: 10,
-
-                  alignSelf: 'center',
-                  // flexDirection: 'row',
-                }}
+                style={{marginTop: 10, marginLeft: 15}}
                 onPress={() => {
                   navigation.navigate('Chat', {
-                    email: student.email,
-                    uid: student.uid,
+                    email: item.email,
+                    uid: item.uid,
                   });
                 }}>
-                <View
+                <Image
                   style={{
-                    flexDirection: 'row',
-                  }}>
-                  <Image
-                    style={{
-                      padding: 5,
-                      height: 100,
-                      width: 80,
-                      marginLeft: 30,
-                      marginTop: 15,
-                      borderRadius: 100,
-
-                      borderColor: 'black',
-                    }}
-                    source={require('../images/Hacker2.png')}
-                  />
-                  <Text
-                    style={{
-                      marginLeft: 50,
-                      marginTop: 40,
-                      fontSize: 23,
-                      fontWeight: '100',
-
-                      color: 'black',
-
-                      fontFamily: 'TiltWarp-Regular',
-                    }}>
-                    {student.name}
-                  </Text>
-                </View>
+                    height: 70,
+                    width: 70,
+                    borderRadius: 50,
+                    marginTop: 10,
+                  }}
+                  source={{
+                    uri: item.display,
+                  }}
+                />
               </TouchableOpacity>
             );
-          })}
-        </View>
-        <View
-          style={{
-            position: 'absolute',
-            top: 20,
-            right: 13,
-            elevation: 3,
-          }}>
-          <AntDesign
-            name="logout"
-            color="white"
-            size={37}
-            style={{
-              backgroundColor: 'black',
-              padding: 10,
-              borderRadius: 50,
-            }}
-            onPress={() => {
-              auth().signOut();
-            }}
-          />
-        </View>
+          }}
+        />
+
         <AntDesign
-          name="plus"
-          color="white"
+          name="pluscircle"
           size={40}
+          color="white"
           style={{
-            position: 'absolute',
-            top: 20,
-            left: 13,
-            backgroundColor: 'black',
-            padding: 7,
+            height: 40,
+            width: 40,
             borderRadius: 50,
-            elevation: 100,
+            position: 'absolute',
+            left: 20,
+            top: 33,
           }}
           onPress={() => {
             navigation.navigate('Tweet');
           }}
         />
+      </View>
+      <View style={{marginTop: 20}}>
+        {tweets.map(student => {
+          return (
+            <View
+              key={student.photu}
+              style={{
+                marginBottom: 30,
+                marginTop: 10,
+                borderTopWidth: 0.1,
+                borderColor: 'white',
+              }}>
+              <View style={{display: 'flex', flexDirection: 'row'}}>
+                <Image
+                  style={{height: 40, width: 40, borderRadius: 50}}
+                  source={{
+                    uri: student.avatar,
+                  }}
+                />
+                <Text
+                  style={{
+                    color: 'white',
+                    marginLeft: 10,
+                    marginTop: 10,
+                    fontWeight: '800',
+                    fontSize: 15,
+                    fontFamily: 'TiltWarp-Regular',
+                  }}>
+                  {student.name}
+                </Text>
+              </View>
+              <Image
+                style={{
+                  flex: 1,
+                  height: 300,
+                  width: '100%',
+                  alignSelf: 'stretch',
+                }}
+                source={{
+                  uri: student.photu,
+                }}
+              />
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  marginTop: 10,
+                  marginLeft: 10,
+                }}>
+                <Icon name="hearto" size={30} color="white" />
+                <EvilIcons
+                  name="comment"
+                  size={40}
+                  color="white"
+                  style={{marginLeft: 10}}
+                />
+                <FontAwesome5
+                  name="share"
+                  size={30}
+                  color="white"
+                  style={{marginLeft: 10}}
+                />
+              </View>
+              <View style={{display: 'flex', flexDirection: 'row'}}>
+                <Text
+                  style={{
+                    fontWeight: '800',
+                    color: 'white',
+                    marginLeft: 10,
+                    marginTop: 10,
+                  }}>
+                  {student.name}
+                </Text>
+                <Text style={{color: 'white', marginLeft: 6, marginTop: 10}}>
+                  {student.tweet}
+                </Text>
+              </View>
+            </View>
+          );
+        })}
       </View>
     </ScrollView>
   );

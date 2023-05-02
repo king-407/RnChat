@@ -2,6 +2,18 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "assets/fonts/Cabin-VariableFont_wdth,wght.ttf",
+      "sha1": "5ad49df392974b43cd015386379a8a2ec2962370"
+    },
+    {
+      "path": "assets/fonts/DancingScript-VariableFont_wght.ttf",
+      "sha1": "f6ef1641594430e8367d9c26819a900c879b8f35"
+    },
+    {
+      "path": "assets/fonts/Poppins-Regular.ttf",
+      "sha1": "fdd3002e7d814ee47c1c1b8487c72c6bbb3a2d00"
+    },
+    {
       "path": "assets/fonts/TiltWarp-Regular.ttf",
       "sha1": "8738e571814490bd3e8699149299651d17994e20"
     }

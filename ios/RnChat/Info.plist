@@ -54,6 +54,9 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>TiltWarp-Regular.ttf</string>
+		<string>Cabin-VariableFont_wdth,wght.ttf</string>
+		<string>Poppins-Regular.ttf</string>
+		<string>DancingScript-VariableFont_wght.ttf</string>
 	</array>
 </dict>
 </plist>
